@@ -1,0 +1,111 @@
+﻿CSharpPlayground/
+│  CSharpPlayground.sln
+│  .gitignore
+│  README.md                    # stručný popis spuštění a cílů modulů
+│
+├─ docs/
+│    Zadani-rozsirene.md        # přepis/poznámky ze zadání (pro rychlý odkaz)
+│
+├─ Data/
+│    products.json              # zdrojová data pro moduly 2,4
+│
+├─ exports/                     # výstupy z modulu 4 (JSON exporty)
+│
+├─ CSharpPlayground/            # konzolová app (entry point + UI, žádná business logika)
+│  │  CSharpPlayground.csproj
+│  │  Program.cs                # entry point → spouští App.Run() a centrální try/catch
+│  │
+│  ├─ App/
+│  │   App.cs                   # ruční DI kompozice: jediné místo, kde se používá 'new' pro služby
+│  │   AppConfig.cs             # model pro konfiguraci (načtení z appsettings.json)
+│  │
+│  ├─ Menu/
+│  │   MenuLoop.cs              # hlavní while smyčka, vstup uživatele, 'help', mapování voleb → IModule
+│  │   IModule.cs               # kontrakt pro moduly: Name, Description, RunAsync() apod.
+│  │   ModuleRegistry.cs        # registr dostupných modulů (ID → IModule)
+│  │
+│  ├─ Common/
+│  │   ConsoleTablePrinter.cs   # utilita pro tabulkový výpis (zarovnání) – modul 2
+│  │   Extensions/
+│  │      EnumerableExtensions.cs
+│  │
+│  ├─ Modules/
+│  │   ├─ Module1_Menu/
+│  │   │    Module1Runner.cs    # jen orchestruje menu/flow, žádná logika
+│  │   │
+│  │   ├─ Module2_CollectionsLinq/
+│  │   │    Module2Runner.cs    # orchestrace vstupů a výpisů
+│  │   │    ProductSamples.cs   # in-memory dataset, alternativně load z JSON
+│  │   │
+│  │   ├─ Module3_OopSolid/
+│  │   │    Module3Runner.cs
+│  │   │    Pricing/
+│  │   │      IPricingStrategy.cs
+│  │   │      FlatDiscountStrategy.cs
+│  │   │      CategoryDiscountStrategy.cs
+│  │   │    Inventory/
+│  │   │      IInventoryService.cs
+│  │   │      InMemoryInventoryService.cs
+│  │   │    Orders/
+│  │   │      IOrderService.cs
+│  │   │      Order.cs
+│  │   │      OrderItem.cs
+│  │   │      OrderStatus.cs
+│  │   │
+│  │   ├─ Module4_FilesJson/
+│  │   │    Module4Runner.cs
+│  │   │    IJsonStorage.cs
+│  │   │    FileJsonStorage.cs  # načtení/uložení JSON + validace + chybové stavy
+│  │   │
+│  │   ├─ Module5_AsyncCancel/
+│  │   │    Module5Runner.cs
+│  │   │    PriceRecalculator.cs # RecalculatePricesAsync(..., token, IProgress<int>)
+│  │   │
+│  │   ├─ Module6_DelegatesEvents/
+│  │   │    Module6Runner.cs
+│  │   │    OrderCreatedEventArgs.cs
+│  │   │    NotificationService.cs  # subscriber
+│  │   │    FuncUtils.cs            # malá utilita s Func<T,T>
+│  │   │
+│  │   ├─ Module7_PatternsRecords/
+│  │   │    Module7Runner.cs
+│  │   │    DeliveryInfo.cs        # GetDeliveryInfo(Product) – switch expression
+│  │   │
+│  │   ├─ Module8_ManualDI/
+│  │   │    Module8Runner.cs       # ukazuje, že instanciace probíhá v App.cs (ne tady)
+│  │   │
+│  │   ├─ Module9_ErrorsExceptions/
+│  │   │    Module9Runner.cs
+│  │   │    Exceptions/
+│  │   │      DataFileException.cs
+│  │   │      OutOfStockException.cs
+│  │   │    Logging/
+│  │   │      ILogger.cs
+│  │   │      ConsoleLogger.cs     # čas, typ, message; deduplikace ID chyb
+│  │   │
+│  │   └─ Module10_Tests/
+│  │        (prázdné – skutečné testy jsou v samostatném test projektu)
+│  │
+│  ├─ Domain/                     # sdílené doménové modely (použité v modulech 2–7)
+│  │   Product.cs                 # record Product
+│  │   DigitalProduct.cs          # record DigitalProduct : Product
+│  │
+│  ├─ Properties/
+│  │   launchSettings.json
+│  │
+│  └─ appsettings.json            # cesty k souborům, batch size, apod.
+│
+├─ CSharpPlayground.Core/         # volitelné: přesun části domény/služeb sem, pokud chceš čistší vrstvy
+│  │  CSharpPlayground.Core.csproj
+│  ├─ Abstractions/               # rozhraní (např. IOrderService, IInventoryService, ILogger)
+│  ├─ Models/                     # recordy a DTO sdílené napříč projekty
+│  └─ Services/                   # čisté implementace bez UI
+│
+└─ CSharpPlayground.Tests/        # xUnit projekt (modul 10)
+   │  CSharpPlayground.Tests.csproj
+   ├─ LinqTests.cs                # Search/Filter/Sort/Aggregate
+   ├─ PricingStrategyTests.cs     # Flat vs Category-based – očekávané výsledky
+   ├─ InventoryTests.cs           # idempotentní rezervace
+   ├─ OrderServiceTests.cs        # integrační test s faky
+   ├─ DeliveryInfoTests.cs        # pattern matching větve
+   └─ ExceptionsTests.cs          # výjimky a chybové stavy
