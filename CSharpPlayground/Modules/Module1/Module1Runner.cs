@@ -9,7 +9,7 @@ namespace CSharpPlayground.Modules.Module1;
 /// Minimal module used to verify the menu.
 /// Demonstrates async flow and cancellation support.
 /// </summary>
-public sealed class HelloAsyncWorldModule : IModule
+public sealed class Module1Runner : IModule
 {
     public string Name => "Hello Async World";
     public string Description => "Prints a greeting and simulates brief async work.";
